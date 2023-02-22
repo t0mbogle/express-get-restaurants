@@ -5,26 +5,37 @@ const {sequelize} = require("./db");
 
 const port = 3000;
 
+app.use(express.json());
+
 //TODO: Create your GET Request Route Below: 
-app.get("/restaurants", async (request, response) => {
+app.get("/restaurants", async (req, res) => {
     const myRestaurants = await Restaurant.findAll();
-    response.json(myRestaurants);
+    res.json(myRestaurants);
 })
 
-app.get("/restaurants/:id", async (request, response) => {
-    const id = request.params.id;
+app.get("/restaurants/:id", async (req, res) => {
+    const id = req.params.id;
     const restaurant = await Restaurant.findByPk(id);
-    response.send(restaurant);
+    res.json(restaurant);
 })
 
-app.post("/restaurants", async (request, response) => {
-    const { name, location, cuisine } = request.body;
-    const addRestaurant = await Restaurant.create({
-        name,
-        location,
-        cuisine
-    })
-    // const insert = await Restaurant.push(addRestaurant);
+//post
+app.post("/restaurants", async (req, res) => {
+    const { name, location, cuisine } = req.body;
+    try {
+        Restaurant.push(req.body);
+        res.sendStatus(200);
+    } catch (error) {
+        res.status(500).send({ err: error.message })
+    }
+})
+
+// update
+
+// delete
+app.delete('/restaurants/:id', async (req, res) => {
+    await Restaurant.destroy({ where: { id: req.params.id } });
+    res.sendStatus(200);
 })
 
 app.listen(port, () => {
