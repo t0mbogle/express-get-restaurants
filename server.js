@@ -26,13 +26,31 @@ app.post("/restaurants", async (req, res) => {
         if (!newRes) {
             throw new Error("No restaurant data added");
         }
-        res.status(200).send({ msg: "Success", newRes });
+        res.status(201).send({ msg: "Success", newRes });
     } catch (error) {
         res.status(500).send({ err: error.message });
     }
 })
 
 // update
+app.put("/restaurants/:id", async (req, res) => {
+    try {
+        const updateRes = await Restaurant.update({
+            name: req.body.name,
+            location: req.body.location,
+            cuisine: req.body.cuisine
+        }, { 
+            where: { 
+                id: req.params.id 
+            }
+        });
+        res.status(200).send({ msg: "Restaurant updated", updateRes });
+    } catch (error) {
+        res.status(500).send({ err: error.message });
+    }
+})
+
+
 
 // delete
 app.delete('/restaurants/:id', async (req, res) => {
