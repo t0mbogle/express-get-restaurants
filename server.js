@@ -21,12 +21,14 @@ app.get("/restaurants/:id", async (req, res) => {
 
 //post
 app.post("/restaurants", async (req, res) => {
-    const { name, location, cuisine } = req.body;
     try {
-        Restaurant.push(req.body);
-        res.sendStatus(200);
+        const newRes = await Restaurant.create(req.body);
+        if (!newRes) {
+            throw new Error("No restaurant data added");
+        }
+        res.status(200).send({ msg: "Success", newRes });
     } catch (error) {
-        res.status(500).send({ err: error.message })
+        res.status(500).send({ err: error.message });
     }
 })
 
