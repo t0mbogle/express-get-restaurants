@@ -1,3 +1,4 @@
+const { check, validationResult } = require('express-validator');
 const express = require("express");
 const {Restaurant} = require("../models/index");
 const restaurantRouter = express.Router();
@@ -16,15 +17,26 @@ restaurantRouter.get("/:id", async (req, res) => {
 
 
 // creating
-restaurantRouter.post("/", async (req, res) => {
-    try {
-        const newRes = await Restaurant.create(req.body);
-        if (!newRes) {
-            throw new Error("No restaurant data added");
+restaurantRouter.post("/", [
+    check("name").not().isEmpty().trim(),
+    check("location").not().isEmpty().trim(),
+    check("cuisine").not().isEmpty().trim()
+], async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        res.json({ error: errors.array() })
+    } else {
+
+        try {
+            const newRes = await Restaurant.create(req.body);
+            if (!newRes) {
+                throw new Error("No restaurant data added");
+            }
+            res.status(201).send({ msg: "Success", newRes });
+        } catch (error) {
+            res.status(500).send({ err: error.message });
         }
-        res.status(201).send({ msg: "Success", newRes });
-    } catch (error) {
-        res.status(500).send({ err: error.message });
+        
     }
 })
 
