@@ -20,7 +20,8 @@ restaurantRouter.get("/:id", async (req, res) => {
 restaurantRouter.post("/", [
     check("name").not().isEmpty().trim(),
     check("location").not().isEmpty().trim(),
-    check("cuisine").not().isEmpty().trim()
+    check("cuisine").not().isEmpty().trim(),
+    check("name").isLength({ min: 10, max: 30 })
 ], async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -36,7 +37,7 @@ restaurantRouter.post("/", [
         } catch (error) {
             res.status(500).send({ err: error.message });
         }
-        
+
     }
 })
 
